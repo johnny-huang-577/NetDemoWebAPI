@@ -1,0 +1,6 @@
+@DemotWebAPI_HostAddress = http://localhost:5282
+
+GET {{DemotWebAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
