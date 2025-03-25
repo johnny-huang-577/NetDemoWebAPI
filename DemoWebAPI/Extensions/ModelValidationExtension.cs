@@ -17,51 +17,60 @@ namespace DemoWebAPI.Extensions
                 options.InvalidModelStateResponseFactory = context =>
                 {
 
-                    var errors = new Dictionary<string, string>();
-
-                    foreach (var entry in context.ModelState)
+                    // "$" 是 JSON 格式錯誤的關鍵字
+                    // 這裡檢查是否有 JSON 格式錯誤的情況，例如多餘的逗號
+                    // 如果有，就直接回傳 JSON 格式錯誤的訊息
+                    if (context.ModelState.ContainsKey("$"))
                     {
-                        var fieldName = entry.Key;
-
-                        // 使用context.ActionDescriptor.Parameters取得當前執行的控制器動作方法的參數
-                        // 過濾掉與 DTO 物件名稱匹配的鍵
-                        if (context.ActionDescriptor.Parameters.Any(p => p.Name == fieldName))
-                        {
-                            continue;
-                        }
-
-                        // 移除欄位名稱中的前綴，例如 "teacherDetailDTO" 或 "$."
-                        fieldName = fieldName.Split('.').Last().TrimStart('$');
-
-                        var errorMessages = entry.Value.Errors;
-
-                        if (errorMessages.Any())
-                        {
-                            // 檢查是否為型別錯誤
-                            var isTypeError = errorMessages.Any(e => e.Exception is FormatException || e.Exception is InvalidCastException)||
-                                              errorMessages.Any(e => e.ErrorMessage.Contains("could not be converted"));
-
-                            if (isTypeError)
+                        return new BadRequestObjectResult(new ModelValidationFailedDTO
                             {
+                                StatusCode = HttpStatusCode.BadRequest,
+                                Message = "JSON 格式錯誤",
+                                Errors = new Dictionary<string, string>
+                                {
+                                    ["format"] = "請檢查 JSON 格式是否正確"
+                                }
+
+
+                        });
+                    }
+
+
+                    // 檢查 ModelState 中的模型欄位綁定錯誤
+                    var errors = new Dictionary<string, string>();
+                    if (context.ModelState.ErrorCount > 0)
+                    {
+                        foreach (var entry in context.ModelState.Where(e => e.Value.Errors.Any()))
+                        {
+
+                            // 取得欄位名稱
+                            var fieldName = entry.Key;
+                            // 取得錯誤訊息
+                            var errorMessages = entry.Value.Errors;
+
+
+                            // 處理型別錯誤
+                            if (errorMessages.Any(e => e.Exception is FormatException ||
+                                                  e.Exception is InvalidCastException ||
+                                                  e.ErrorMessage.Contains("could not be converted")))
+                            {
+
                                 errors[fieldName] = "資料型別錯誤";
                             }
+                            //Model註解驗證的錯誤
                             else
                             {
                                 errors[fieldName] = errorMessages.First().ErrorMessage;
                             }
                         }
                     }
-
-                    var modelValidationFailedDTO = new ModelValidationFailedDTO
+                    return new BadRequestObjectResult(new ModelValidationFailedDTO
                     {
                         StatusCode = HttpStatusCode.BadRequest,
-                        Message = "必要欄位資料缺失或型別錯誤",
+                        Message = "提供的資料不符合要求",
                         Errors = errors
-                    };
-
-                    return new BadRequestObjectResult(modelValidationFailedDTO);
+                    });
                 };
-
             });
         }
     }
