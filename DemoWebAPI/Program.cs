@@ -4,7 +4,9 @@ using DemoWebAPI.Extensions;
 using DemoWebAPI.Middlewares;
 using DemoWebAPI.Services.IServices;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using Serilog;
+using System.Reflection;
 using TestBackEnd.DataAccess.Repository;
 
 //=========================================================Configure the app's services.=========================================================
@@ -55,7 +57,25 @@ builder.Services.ModelValidation();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "My API",
+        Version = "v1",
+        Description = "這是我的 API 文件",
+        Contact = new OpenApiContact
+        {
+            Name = "Your Name",
+            Email = "your-email@example.com",
+            Url = new Uri("https://your-website.com")
+        }
+    });
+    var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+});
+
+
 
 
 //=========================================================Configure the HTTP request pipeline.=========================================================
@@ -66,7 +86,10 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "My API v1");
+    });
 }
 
 // 使用自訂檢測伺服器異常的 Middleware，用Serilog記錄日誌，以免讓ASP.NET Core內部又再記錄一次

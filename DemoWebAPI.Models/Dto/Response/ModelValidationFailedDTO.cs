@@ -6,7 +6,7 @@ namespace DemoWebAPI.Models.Dto.Response
     public class ModelValidationFailedDTO
     {
         public HttpStatusCode StatusCode { get; set; }
-        public bool IsSuccess { get; set; } = false;
+        public bool RequestSuccess { get; set; } = false;
         public string Message { get; set; }
         public Dictionary<string, string> Errors { get; set; }
     }

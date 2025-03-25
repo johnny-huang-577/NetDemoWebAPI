@@ -5,7 +5,8 @@ namespace DemoWebAPI.Models.Dto.Response
 {
     public class OperationResultDTO
     {
-        public bool OperationSuccess { get; set; }
+        public bool Success { get; set; } = false;
+        public Dictionary<string, string>? Errors { get; set; }
         public object? Data { get; set; }
     }
 

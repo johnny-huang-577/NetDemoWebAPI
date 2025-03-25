@@ -43,7 +43,7 @@ namespace DemoWebAPI.Middlewares
                                          , (int)HttpStatusCode.BadGateway, context.Request.Path, elapsedTime, ex.Message);
 
                     serverExceptionDTO.StatusCode = HttpStatusCode.BadGateway;
-                    serverExceptionDTO.IsSuccess = false;
+                    serverExceptionDTO.RequestSuccess = false;
                     serverExceptionDTO.Messages = "無法連接到服務，請稍後再試。";
                 }
                 else if (ex is TimeoutException)      // 逾時例外，設定狀態碼為 504
@@ -55,7 +55,7 @@ namespace DemoWebAPI.Middlewares
                                          , (int)HttpStatusCode.GatewayTimeout, context.Request.Path, elapsedTime, ex.Message);
 
                     serverExceptionDTO.StatusCode = HttpStatusCode.GatewayTimeout;
-                    serverExceptionDTO.IsSuccess = false;
+                    serverExceptionDTO.RequestSuccess = false;
                     serverExceptionDTO.Messages = "伺服器逾時，請稍後再試。";
                 }
                 else                                  // 其他例外，設定狀態碼為 500
@@ -67,7 +67,7 @@ namespace DemoWebAPI.Middlewares
                                          , (int)HttpStatusCode.InternalServerError, context.Request.Path, elapsedTime, ex.Message);
 
                     serverExceptionDTO.StatusCode = HttpStatusCode.InternalServerError;
-                    serverExceptionDTO.IsSuccess = false;
+                    serverExceptionDTO.RequestSuccess = false;
                     serverExceptionDTO.Messages = "伺服器發生錯誤，請稍後再試。";
                 }
 

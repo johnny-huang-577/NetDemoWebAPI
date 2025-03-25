@@ -8,15 +8,7 @@ namespace DemoWebAPI.Models.Dto.Response
         public HttpStatusCode StatusCode { get; set; }
         public bool RequestSuccess { get; set; }
         public string Message { get; set; }
-        public OperationResultDTO? ResponseBody { get; set; }
+        public object? Data { get; set; }
+
     }
-
-    //{
-    //    "StatusCode": 200,
-    //    "IsSuccess": true,
-    //    "Data": {
-    //      // 各資料的DTO
-    //    }
-    //}
-
 }

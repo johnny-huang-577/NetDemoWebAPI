@@ -1,6 +1,8 @@
 ﻿using DemoWebAPI.DataAccess.Data;
 using DemoWebAPI.DataAccess.Repository;
 using DemoWebAPI.DataAccess.Repository.IRepository;
+using DemoWebAPI.Models.Entity;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace TestBackEnd.DataAccess.Repository
@@ -21,6 +23,21 @@ namespace TestBackEnd.DataAccess.Repository
 
         public async Task SaveAsync()
         {
+            var entries = _db.ChangeTracker.Entries<BaseEntity>();
+
+            foreach (var entry in entries)
+            {
+                if (entry.State == EntityState.Added)
+                {
+                    entry.Entity.CreateTime = DateTime.Now;
+                }
+
+                if (entry.State == EntityState.Modified)
+                {
+                    entry.Entity.UpdateTime = DateTime.Now;
+                }
+            }
+
             await _db.SaveChangesAsync();
         }
 
