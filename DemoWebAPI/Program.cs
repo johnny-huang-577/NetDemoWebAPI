@@ -49,7 +49,11 @@ Log.Logger = new LoggerConfiguration()
 builder.Host.UseSerilog();  // 使用 Serilog 作為日誌提供者
 
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    //當DTO序列化，後所有 null 值的屬性都會被自動忽略，不會出現在 JSON 回應中。
+    options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+}); ;
 
 
 // 註冊ModelValidation ，用來回覆模型驗證結果

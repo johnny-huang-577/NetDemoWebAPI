@@ -106,7 +106,7 @@ namespace DemoWebAPI.Controllers
                 _responseDTO.StatusCode = HttpStatusCode.BadRequest;
                 _responseDTO.Message = "新增失敗";
                 _responseDTO.RequestSuccess = false;
-                _responseDTO.Data = _operationResultDTO.Errors;
+                _responseDTO.Errors = _operationResultDTO.Errors;
                 return BadRequest(_responseDTO);
             }
 

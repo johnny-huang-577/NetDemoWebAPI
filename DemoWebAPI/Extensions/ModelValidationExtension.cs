@@ -30,8 +30,6 @@ namespace DemoWebAPI.Extensions
                                 {
                                     ["format"] = "請檢查 JSON 格式是否正確"
                                 }
-
-
                         });
                     }
 
@@ -44,9 +42,15 @@ namespace DemoWebAPI.Extensions
                         {
 
                             // 取得欄位名稱
-                            var fieldName = entry.Key;
+                            var fieldName = entry.Key.Replace("$.", "");
                             // 取得錯誤訊息
                             var errorMessages = entry.Value.Errors;
+
+                            // Action的參數名稱(DTO)不要回傳
+                            if (context.ActionDescriptor.Parameters.Any(p => p.Name == fieldName))
+                            {
+                                continue;
+                            }
 
 
                             // 處理型別錯誤

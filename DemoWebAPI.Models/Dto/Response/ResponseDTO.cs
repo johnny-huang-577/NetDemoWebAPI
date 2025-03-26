@@ -8,7 +8,9 @@ namespace DemoWebAPI.Models.Dto.Response
         public HttpStatusCode StatusCode { get; set; }
         public bool RequestSuccess { get; set; }
         public string Message { get; set; }
+        public Dictionary<string, string>? Errors { get; set; }
         public object? Data { get; set; }
+
 
     }
 }
